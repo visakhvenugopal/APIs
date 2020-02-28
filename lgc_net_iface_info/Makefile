@@ -1,6 +1,6 @@
 #Makefile for Katadyn Desalination Products
 
-UTIL := get-net-iface-info
+UTIL := lgc-get-net-iface-info
 
 SRCS := lgc_net_iface_info.c \
 	main.c
