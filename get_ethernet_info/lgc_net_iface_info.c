@@ -1,3 +1,15 @@
+/*
+ * -----------------------------------------------------------------------+
+ * file		: lgc_net_iface_info.c
+ * header	: lgc_net_iface_info.h
+ * date		: 02/31/2020
+ * compiler	: gcc
+ * author	: Visakh Venugopal [visakh.vinayak@gmail.com]
+ *
+ * Entry point
+ * -----------------------------------------------------------------------+
+ */
+
 #define _GNU_SOURCE     /* To get defns of NI_MAXSERV and NI_MAXHOST */
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -9,27 +21,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <linux/if_link.h>
+#include "lgc_net_iface_info.h"
 
-struct net_interface {
-	int up;
-	char interface[64];
-	char ipv4_address[64];
-	char ipv6_address[64];
-};
-
-int main(int argc, char *argv[])
-{
-	struct net_interface nt = {0, "NILL", "NILL", "NILL"};
-
-	get_inet_address(&nt);
-	if(nt.up == 1)
-		printf("%s\n\t%s\n\t%s\n", nt.interface, nt.ipv4_address, nt.ipv6_address);
-	else
-		printf("\tNo ethernet interface connacted.!\n");
-
-}
-
-int get_inet_address(struct net_interface *nt)
+/**
+ * @args
+ *	nt	: Pointer to the network interface struct
+ *	iface	: Name of the interface as string
+ * @return
+ *	Status
+ */
+int lgc_get_net_iface_info(struct lgc_net_interface *nt, const char *iface)
 {
 	struct ifaddrs *ifaddr, *ifa;
 	int family, s, n;
@@ -55,7 +56,7 @@ int get_inet_address(struct net_interface *nt)
 
 		/* Display interface name and family (including symbolic
 		   form of the latter for the common families) */
-		if((net_flags & IFF_UP) && (family == AF_INET || family == AF_INET6) && strstr(ifa->ifa_name, "eth") != NULL) {
+		if((net_flags & IFF_UP) && (family == AF_INET || family == AF_INET6) && strstr(ifa->ifa_name, iface) != NULL) {
 
 			strcpy(interface_name, ifa->ifa_name);
 			strcpy(nt->interface, ifa->ifa_name);
